@@ -13,14 +13,15 @@ struct CustomComparator {
 
 class Graph {
     public:
-        Graph(int vertices);
+        Graph();
         void makeEdge(Node node1, Node node2);
         void makeVertex(Node node);
         void findShortestPath();
-        void printAdjList(int goal);
+        void printAdjList();
+        bool containsNode(Node node1, Node node2);
         ~Graph();
     private:
-        std::unordered_map<Node, std::set<Node, CustomComparator>>* adjList;
+        std::unordered_map<double, std::set<Node, CustomComparator>>* adjList;
 };
 
 
