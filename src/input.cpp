@@ -31,8 +31,6 @@ void readInput(vector<string> &input, string inputFile) {
 void makeGraph(string inputFile) {
     vector<string> input;
 
-    cout << inputFile << endl;
-
     //storing the input into a vector
     readInput(input, inputFile);
 
@@ -49,7 +47,7 @@ void makeGraph(string inputFile) {
         // Read the data from the current line
         stream >> id >> open >> pickupX >> comma >> pickupY >> close >> space >> dropX >> comma >> dropY >> close;
 
-        cout << "Read values: " << id << ", (" << pickupX << ", " << pickupY << "), (" << dropX << ", " << dropY << ")" << endl;
+        // cout << "Read values: " << id << ", (" << pickupX << ", " << pickupY << "), (" << dropX << ", " << dropY << ")" << endl;
 
         // Store the data into corresponding vectors
         pX.push_back(pickupX);
@@ -62,33 +60,40 @@ void makeGraph(string inputFile) {
 
     Graph *graph = new Graph();
 
-    Node start(0, 0, false, false, 0, true, 0, 0);
+    Node start(0, 0, false, false, 0, true, 0, 0, 0);
 
     graph->makeVertex(start);
 
+    //Make min number of edges
     for (int i = 0; i < pX.size(); i++) {
-        Node temp(i+1, distance(0, pX[i], 0, pY[i]), true, false, i+1.5, false, pX[i], pY[i]);
+        double d1 = distance(0, pX[i], 0, pY[i]);
+        double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
+        double d3 = distance(0, dX[i], 0, dY[i]);
+        Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], d2);
         graph->makeEdge(start, temp);
         graph->makeEdge(temp, start);
 
-        temp = Node(i+1.5, distance(pX[i], dX[i], pY[i], dY[i]), false, true, i+1, false, dX[i], dY[i]);
+        temp = Node(i+1.5, d3, false, true, 0, false, dX[i], dY[i], 0);
         graph->makeEdge(start, temp);
         graph->makeEdge(temp, start);
     }
 
     vector<bool> visited(pX.size(), false);
 
-
+    //Make graph complete
     for (int i = 0; i < pX.size(); i++) {
-        Node currentP(i+1, 0, true, false, i+1.5, false, pX[i], pY[i]);
-        Node currentD(i+1.5, 0, false, true, i-0.5, false, dX[i], dY[i]);
+        Node currentP(i+1, 0, true, false, i+1.5, false, pX[i], pY[i], 0);
+        Node currentD(i+1.5, 0, false, true, i-0.5, false, dX[i], dY[i], 0);
         for (int j = 0; j < pX.size(); j++) {
-            graph->makeEdge(currentP, Node(j+1.5, distance(pX[j], dX[i], pY[j], dY[i]), true, false, j+1, false, pX[j], pY[j]));
-            graph->makeEdge(currentD, Node(j+1, distance(pX[i], dX[j], pY[i], dY[j]), true, false, j+1.5, false, dX[j], dY[j]));
+            double d1 = distance(pX[j], dX[i], pY[j], dY[i]);
+            double d2 = distance(pX[i], dX[j], pY[i], dY[j]);
+            graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], d2));
+            graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], d1));
         }
     }
 
     graph->printAdjList();
+    graph->findShortestPath(start, pX.size());
 
     delete graph;
 
