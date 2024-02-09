@@ -62,36 +62,45 @@ void makeGraph(string inputFile) {
 
     Node start(0, 0, false, false, 0, true, 0, 0, 0);
 
+    vector<bool> visited(pX.size(), false);
+    vector<double> weights(pX.size(), 0), home(pX.size(), 0);
+
     graph->makeVertex(start);
 
     //Make min number of edges
     for (int i = 0; i < pX.size(); i++) {
         double d1 = distance(0, pX[i], 0, pY[i]);
-        double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
+        // double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
         double d3 = distance(0, dX[i], 0, dY[i]);
-        Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], d2);
+        Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], 0);
         graph->makeEdge(start, temp);
         graph->makeEdge(temp, start);
 
         temp = Node(i+1.5, d3, false, true, 0, false, dX[i], dY[i], 0);
+        home[i] = d3;
         graph->makeEdge(start, temp);
         graph->makeEdge(temp, start);
     }
-
-    vector<bool> visited(pX.size(), false);
 
     //Make graph complete
     for (int i = 0; i < pX.size(); i++) {
         Node currentP(i+1, 0, true, false, i+1.5, false, pX[i], pY[i], 0);
         Node currentD(i+1.5, 0, false, true, i-0.5, false, dX[i], dY[i], 0);
         for (int j = 0; j < pX.size(); j++) {
-            double d1 = distance(pX[j], dX[i], pY[j], dY[i]);
-            double d2 = distance(pX[i], dX[j], pY[i], dY[j]);
-            graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], d2));
-            graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], d1));
+            double d1 = distance(currentP.x, currentD.x, currentP.y, currentD.y);
+            double d2 = distance(pX[j], currentD.x, pY[j], currentD.y);
+
+            if (j+1 == currentP.id) {
+                graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], 0));
+                weights[j] = d1;
+            }else{
+                graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], 0));
+            }
         }
     }
 
+    graph->setDestination(weights);
+    graph->setHome(home);
     graph->printAdjList();
     graph->findShortestPath(start, pX.size());
 

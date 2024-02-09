@@ -81,7 +81,7 @@ void Graph::makeEdge(Node node1, Node node2) {
  }
 
  void Graph::findShortestPath(Node &start, int size) {
-    double distance = 0;
+    // double distance = 0;
     // unordered_map<Node, bool> *visited = new unordered_map<Node, bool>();
     // queue<Node> q;
     // q.push(start);
@@ -121,47 +121,138 @@ void Graph::makeEdge(Node node1, Node node2) {
     //     }
     // }
 
-       auto it = adjList->find(start);
-       distance += it->first.edge;
+    //    auto it = adjList->find(start);
+    //    distance += it->first.edge;
 
-       for (auto &a : it->second) {
-            Node node(a.destId);
-            auto itDist = adjList->find(node);
-            distance += a.edge + a.parentDist + itDist->first.edge;
-        }
+    //    for (auto &a : it->second) {
+    //         Node node(a.destId);
+    //         auto itDist = adjList->find(node);
+    //         distance += a.edge + a.parentDist + itDist->first.edge;
+    //     }
 
 
 
-    int numberOfDrivers = (distance / (12 * 60)) + 1;
+    // int numberOfDrivers = (distance / (12 * 60)) + 1;
 
-    // if (numberOfDrivers == 1) {
-    //     printOutput(path);
+    // // if (numberOfDrivers == 1) {
+    // //     printOutput(path);
+    // // }
+
+    // double total = 0;
+    // bool found = true;
+
+    // while (found) {
+    //     vector<vector<int>> order(numberOfDrivers, vector<int>());
+    //     total = shortestHelper(numberOfDrivers, start, order);
+    //     numberOfDrivers++;
+
+    //     if (total == size) {
+    //         int count = 0;
+    //         for (auto &a : order) {
+    //             printOutput(a);
+    //             if (count != 0 || count + 1 != order.size()) {
+    //                 cout << endl;
+    //             }
+    //             count++;
+    //         }
+    //         break;
+    //     }
     // }
-
-    double total = 0;
-    bool found = true;
-
-    while (found) {
-        vector<vector<int>> order(numberOfDrivers, vector<int>());
-        total = shortestHelper(numberOfDrivers, start, order);
-        numberOfDrivers++;
-
-        if (total == size) {
-            int count = 0;
-            for (auto &a : order) {
-                printOutput(a);
-                if (count != 0 || count + 1 != order.size()) {
-                    cout << endl;
-                }
-                count++;
-            }
-            break;
-        }
-    }
 
 
     // delete visited;
 
+    vector<double> distance;
+    distance.push_back(0);
+    queue<Node> q;
+    q.push(start);
+    unordered_map<Node, bool> *visited = new unordered_map<Node, bool>();
+    (*visited)[start] = true;
+    double max = 12 * 60;
+    bool pickUp = true, newDriver = false;
+    int drivers = 1;
+    int current = 0;
+    vector<vector<int>> order(drivers, vector<int>());
+    int total = 0;
+
+    while (!q.empty()) {
+        Node element = q.front();
+        q.pop();
+
+        if (total == size) {
+            break;
+        }else{
+            total = 0;
+        }
+
+        if (newDriver) {
+            newDriver = false;
+            drivers++;
+            distance.push_back(0);
+            order.push_back(vector<int>());
+            current = drivers-1;
+        }
+
+        auto it = adjList->find(element);
+
+        if (it == adjList->end()) {
+            continue;
+        }
+
+       int i = current;
+
+         for (auto &a : it->second) {
+            if ((*visited)[a] != true && pickUp) {
+                // auto itLast = adjList->find(Node(a.destId));
+                double totalRound = distance[i] + a.edge + destination[a.id-1] + backHome[a.id-1];
+                if (totalRound >= max && current == i) {
+                    newDriver = true;
+                    break;
+                }else if (current == i){
+                    (*visited)[a] = true;
+                    q.push(a);
+                    pickUp = false;
+                    // distance[i] += a.edge + destination[a.id-1];
+                    distance[i] = totalRound;
+                    break;
+                }
+
+            }else if ((*visited)[a] != true && a.destId == element.id) {
+                (*visited)[a] = true;
+                q.push(a);
+                pickUp = true;
+                order[i].push_back(a.destId);
+                break;
+            }
+
+         }
+
+
+        //  if (!newDriver) {
+        //     q.pop();
+        //  }
+
+        if (newDriver) {
+            q.push(Node(0));
+        }
+
+        for (auto &a : order) {
+            total += a.size();
+        }
+
+        //  cout << total << endl;
+    }
+
+    int count = 0;
+    for (auto &a : order) {
+        printOutput(a);
+        if (count != 0 || count + 1 != order.size()) {
+            cout << endl;
+        }
+        count++;
+    }
+
+    delete visited;
 
  }
 
@@ -172,8 +263,8 @@ void Graph::makeEdge(Node node1, Node node2) {
     double distances[numberOfDrivers];
     double total = 0;
     double max = 12 * 60;
-    double buffer = 200;
-    int min = INT_MAX;
+    // double buffer = 100;
+    // int largestSize = 0;
 
     //Setting our random seed
     // random_device rd;
@@ -193,20 +284,24 @@ void Graph::makeEdge(Node node1, Node node2) {
 
     while (empty) {
         // reverse(randomNumbers.begin(), randomNumbers.end());
-        for (auto &a : order) {
-            if (a.size() > 0 && a.size() < min) {
-                min = a.size();
-            }
-        }
 
         // for (int k = 0; k < randomNumbers.size(); k++) {
         for (int i = 0; i < numberOfDrivers; i++) {
+            // for (auto &a : order) {
+            //     if (a.size() > largestSize) {
+            //         largestSize = a.size();
+            //     }
+            // }
 
             // int i = randomNumbers[k];
 
             if (qArr[i].empty()) {
                 continue;
             }
+
+            // if (order[i].size() > largestSize) {
+            //     continue;
+            // }
 
             Node element = qArr[i].front();
             qArr[i].pop();
@@ -221,11 +316,12 @@ void Graph::makeEdge(Node node1, Node node2) {
 
                 if ((*visited)[a] != true && pickUp[i]) {
                     auto itLast = adjList->find(Node(a.destId));
-                    if ((distances[i] + a.edge + a.parentDist + itLast->first.edge) < max) {
+                    double distDestination = distanceEuclidean(a.x, itLast->first.x, a.y, itLast->first.y);
+                    if ((distances[i] + a.edge + distDestination + itLast->first.edge) < max) {
                         (*visited)[a] = true;
                         qArr[i].push(a);
                         pickUp[i] = false;
-                        distances[i] += a.edge + a.parentDist;
+                        distances[i] += a.edge + distDestination;
                         break;
                     }
                 }

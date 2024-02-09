@@ -21,9 +21,23 @@ class Graph {
         void printAdjList();
         bool containsNode(Node node1, Node node2);
         int shortestHelper(int numberOfDrivers, Node &start, std::vector<std::vector<int>> &order);
+        void setDestination(const std::vector<double>& newDestination) {
+            destination = newDestination;
+        }
+        void setHome(const std::vector<double>& newHome) {
+            backHome = newHome;
+        }
+        std::vector<double> getDestination() const {
+            return destination;
+        }
+        std::vector<double> getHome() const {
+            return backHome;
+        }
         ~Graph();
     private:
         std::unordered_map<Node, std::set<Node, CustomComparator>>* adjList;
+        std::vector<double> destination;
+        std::vector<double> backHome;
 };
 
 
