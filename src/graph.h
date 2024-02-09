@@ -20,7 +20,6 @@ class Graph {
         void findShortestPath(Node &start, int size);
         void printAdjList();
         bool containsNode(Node node1, Node node2);
-        // void updateList();
         void setDestination(const std::vector<double>& newDestination) {
             destination = newDestination;
         }
@@ -35,6 +34,7 @@ class Graph {
         }
         ~Graph();
     private:
+        //Our adjacency list will be a hash map of trees. This will help with efficiency.
         std::unordered_map<Node, std::set<Node, CustomComparator>>* adjList;
         std::vector<double> destination;
         std::vector<double> backHome;

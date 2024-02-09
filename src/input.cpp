@@ -1,12 +1,12 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-#include <queue>
 #include "graph.h"
 #include "input.h"
 
 using namespace std;
 
+//store the input in a vector
 void readInput(vector<string> &input, string inputFile) {
     ifstream in;
     in.open(inputFile);
@@ -23,11 +23,10 @@ void readInput(vector<string> &input, string inputFile) {
         input.push_back(line);
     }
 
-    // cout << "out of initial" << endl;
-
     in.close();
 }
 
+//Constructs our graph
 void makeGraph(string inputFile) {
     vector<string> input;
 
@@ -47,8 +46,6 @@ void makeGraph(string inputFile) {
         // Read the data from the current line
         stream >> id >> open >> pickupX >> comma >> pickupY >> close >> space >> dropX >> comma >> dropY >> close;
 
-        // cout << "Read values: " << id << ", (" << pickupX << ", " << pickupY << "), (" << dropX << ", " << dropY << ")" << endl;
-
         // Store the data into corresponding vectors
         pX.push_back(pickupX);
         pY.push_back(pickupY);
@@ -57,7 +54,6 @@ void makeGraph(string inputFile) {
     }
 
     //Making our graph
-
     Graph *graph = new Graph();
 
     Node start(0, 0, false, false, 0, true, 0, 0, 0);
@@ -74,16 +70,12 @@ void makeGraph(string inputFile) {
         double d3 = distance(0, dX[i], 0, dY[i]);
         Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], d2);
         graph->makeEdge(start, temp);
-        // graph->makeEdge(temp, start);
-
-        // temp = Node(i+1.5, d3, false, true, 0, false, dX[i], dY[i], 0);
         home[i] = d3;
         weights[i] = d2;
-        // graph->makeEdge(start, temp);
-        // graph->makeEdge(temp, start);
+
     }
 
-    //Make graph complete
+    //Add edges from all destination nodes to all pick up nodes (besides correlated pick up nodes)
     for (int i = 0; i < pX.size(); i++) {
         Node currentP(i+1, 0, true, false, i+1.5, false, pX[i], pY[i], 0);
         Node currentD(i+1.5, 0, false, true, i-0.5, false, dX[i], dY[i], 0);
@@ -92,10 +84,9 @@ void makeGraph(string inputFile) {
             double d2 = distance(pX[j], currentD.x, pY[j], currentD.y);
 
             if (j+1 == currentP.id) {
-                graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], d1 + home[j]));
-                // weights[j] = d1;
+                graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], 0));
             }else{
-                graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], weights[j]));
+                graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], 0));
             }
         }
     }

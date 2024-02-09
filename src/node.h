@@ -1,6 +1,7 @@
 #ifndef NODE
 #define NODE
 
+//Each vertex is a node
 struct Node {
     double id;
     double edge;

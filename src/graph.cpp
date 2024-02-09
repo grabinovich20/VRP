@@ -2,13 +2,11 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
-#include <random>
-#include <algorithm>
-#include <chrono>
 #include <unordered_set>
 
 using namespace std;
 
+//Will store elements in our tree based off of closest distance
 bool CustomComparator::operator()(const Node& a, const Node& b) const {
     if (a.isPickUp && !b.isPickUp) {
         return true;
@@ -18,19 +16,6 @@ bool CustomComparator::operator()(const Node& a, const Node& b) const {
         return (a.edge + a.parentDist) < (b.edge + b.parentDist);
     }
 
-}
-
-vector<int> generateRandomNumbers(int min, int max) {
-    vector<int> numbers;
-    for (int i = min; i < max; ++i) {
-        numbers.push_back(i);
-    }
-
-    random_device rd;
-    mt19937 gen(rd());
-    shuffle(numbers.begin(), numbers.end(), gen);
-
-    return numbers;
 }
 
 //Finds the Euclidean distance
@@ -43,6 +28,7 @@ double distanceEuclidean(double x1, double x2, double y1, double y2) {
     return sqrt(distanceSquared);
 }
 
+//Lets us hash our Nodes
 namespace std {
     template <>
     struct hash<Node> {
@@ -53,6 +39,7 @@ namespace std {
     };
 }
 
+//Prints the output in the requried format
 void printOutput(vector<int> &path) {
     if (path.empty()) {
         return;
@@ -68,10 +55,12 @@ void printOutput(vector<int> &path) {
     cout << "]";
 }
 
+//add an edge to the adjacency list
 void Graph::makeEdge(Node node1, Node node2) {
     (*adjList)[node1].insert(node2);
 }
 
+//add a vertex to the adjacency list
  void Graph::makeVertex(Node node) {
     auto it = adjList->find(node);
 
@@ -80,6 +69,7 @@ void Graph::makeEdge(Node node1, Node node2) {
     }
  }
 
+//Finds the shortes path. Uses as combination of BFS and Dijkstra's algorithm ideas.
  void Graph::findShortestPath(Node &start, int size) {
     vector<double> distance;
     distance.push_back(0);
@@ -100,10 +90,9 @@ void Graph::makeEdge(Node node1, Node node2) {
 
         if (total == size) {
             break;
-        }else{
-            total = 0;
         }
 
+        //need a new driver
         if (newDriver) {
             newDriver = false;
             drivers++;
@@ -118,21 +107,24 @@ void Graph::makeEdge(Node node1, Node node2) {
             continue;
         }
 
+        //keep track of the current driver
        int i = current;
 
+        //loop through the neighbors
          for (auto &a : it->second) {
             if ((*visited)[a] != true && pickUp) {
-                // auto itLast = adjList->find(Node(a.destId));
                 double totalRound = distance[i] + a.edge + destination[a.id-1] + backHome[a.id-1];
                 if (totalRound >= max && current == i) {
                     newDriver = true;
                     break;
                 }else if (current == i){
+                    if (newDriver) {
+                        newDriver = false;
+                    }
                     (*visited)[a] = true;
                     q.push(a);
                     pickUp = false;
                     distance[i] += a.edge + destination[a.id-1];
-                    // distance[i] = totalRound;
                     break;
                 }
 
@@ -141,27 +133,19 @@ void Graph::makeEdge(Node node1, Node node2) {
                 q.push(a);
                 pickUp = true;
                 order[i].push_back(a.destId);
+                total += 1;
                 break;
             }
 
          }
 
-
-        //  if (!newDriver) {
-        //     q.pop();
-        //  }
-
+        //if there is a new driver, have them start at (0,0)
         if (newDriver) {
             q.push(Node(0));
         }
-
-        for (auto &a : order) {
-            total += a.size();
-        }
-
-        //  cout << total << endl;
     }
 
+    //prints out the paths
     int count = 0;
     for (auto &a : order) {
         printOutput(a);
@@ -171,16 +155,19 @@ void Graph::makeEdge(Node node1, Node node2) {
         count++;
     }
 
+    //Exit our program, bypasses all memory cleanup since we are exiting the program
+    exit(0);
+
     delete visited;
 
  }
 
- 
+ //constructor
  Graph::Graph() {
    adjList = new unordered_map<Node, set<Node, CustomComparator>>();
 }
 
-
+//will print our adjacency list
 void Graph::printAdjList() {
    ofstream out;
    out.open("test.txt");
@@ -202,14 +189,7 @@ void Graph::printAdjList() {
 
 }
 
-// void Graph::updateList() {
-//     for (auto &a : *adjList) {
-//         for (auto it = a.begin(); it != a.end(); ++it) {
-
-//         }
-//     }
-// }
-
+//checks if a node is in our adjacency list
 bool Graph::containsNode(Node node1, Node node2) {
    auto iteratorMap = adjList->find(node1);
 
@@ -225,7 +205,7 @@ bool Graph::containsNode(Node node1, Node node2) {
    return false;
 }
 
-
+//memory cleanup
  Graph::~Graph() {
    delete adjList;
 }

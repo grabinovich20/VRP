@@ -1,0 +1,26 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+.DS_Store
+.vscode
+
+# Executables
+*.exe
+*.out
+
+# Build directory
+/build/
+
+# Temporary files
+*.swp
+*~
+
+# Text files
+*.txt
+
+# But allow CMake-related .txt files
+!CMakeLists.txt
+
+# Python files
+*.py
