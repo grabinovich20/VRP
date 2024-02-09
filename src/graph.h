@@ -20,7 +20,7 @@ class Graph {
         void findShortestPath(Node &start, int size);
         void printAdjList();
         bool containsNode(Node node1, Node node2);
-        int shortestHelper(int numberOfDrivers, Node &start, std::vector<std::vector<int>> &order);
+        // void updateList();
         void setDestination(const std::vector<double>& newDestination) {
             destination = newDestination;
         }

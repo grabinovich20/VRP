@@ -81,87 +81,6 @@ void Graph::makeEdge(Node node1, Node node2) {
  }
 
  void Graph::findShortestPath(Node &start, int size) {
-    // double distance = 0;
-    // unordered_map<Node, bool> *visited = new unordered_map<Node, bool>();
-    // queue<Node> q;
-    // q.push(start);
-    // (*visited)[start] = true;
-    // bool pickUp = true;
-    // vector<int> path;
-
-    // while (!q.empty()) {
-    //     Node element = q.front();
-    //     start = element;
-    //     q.pop();
-
-    //     auto it = adjList->find(element);
-
-    //     if (it == adjList->end()) {
-    //         continue;
-    //     }
-
-    //    for (auto &a : it->second) {
-    //        if ((*visited)[a] != true && pickUp) {
-    //           (*visited)[a] = true;
-    //           q.push(a);
-    //           pickUp = false;
-    //           distance += a.edge;
-    //           break;
-    //        }
-        
-    //        if ((*visited)[a] != true && a.destId == element.id) {
-    //           (*visited)[a] = true;
-    //           q.push(a);
-    //           pickUp = true;
-    //           distance += a.edge;
-    //           path.push_back(a.destId);
-    //           break;
-    //        }
-
-    //     }
-    // }
-
-    //    auto it = adjList->find(start);
-    //    distance += it->first.edge;
-
-    //    for (auto &a : it->second) {
-    //         Node node(a.destId);
-    //         auto itDist = adjList->find(node);
-    //         distance += a.edge + a.parentDist + itDist->first.edge;
-    //     }
-
-
-
-    // int numberOfDrivers = (distance / (12 * 60)) + 1;
-
-    // // if (numberOfDrivers == 1) {
-    // //     printOutput(path);
-    // // }
-
-    // double total = 0;
-    // bool found = true;
-
-    // while (found) {
-    //     vector<vector<int>> order(numberOfDrivers, vector<int>());
-    //     total = shortestHelper(numberOfDrivers, start, order);
-    //     numberOfDrivers++;
-
-    //     if (total == size) {
-    //         int count = 0;
-    //         for (auto &a : order) {
-    //             printOutput(a);
-    //             if (count != 0 || count + 1 != order.size()) {
-    //                 cout << endl;
-    //             }
-    //             count++;
-    //         }
-    //         break;
-    //     }
-    // }
-
-
-    // delete visited;
-
     vector<double> distance;
     distance.push_back(0);
     queue<Node> q;
@@ -212,8 +131,8 @@ void Graph::makeEdge(Node node1, Node node2) {
                     (*visited)[a] = true;
                     q.push(a);
                     pickUp = false;
-                    // distance[i] += a.edge + destination[a.id-1];
-                    distance[i] = totalRound;
+                    distance[i] += a.edge + destination[a.id-1];
+                    // distance[i] = totalRound;
                     break;
                 }
 
@@ -256,111 +175,7 @@ void Graph::makeEdge(Node node1, Node node2) {
 
  }
 
- int Graph::shortestHelper(int numberOfDrivers, Node &start, vector<vector<int>> &order) {
-    queue<Node> qArr[numberOfDrivers];
-    vector<double> location(numberOfDrivers, 0);
-    vector<bool> pickUp(numberOfDrivers, true);
-    double distances[numberOfDrivers];
-    double total = 0;
-    double max = 12 * 60;
-    // double buffer = 100;
-    // int largestSize = 0;
-
-    //Setting our random seed
-    // random_device rd;
-    // mt19937 gen(rd());
-    // uniform_int_distribution<int> dis(0, numberOfDrivers - 1); 
-
-    unordered_map<Node, bool> *visited = new unordered_map<Node, bool>();
-
-    for (int i = 0; i < numberOfDrivers; i++) {
-        qArr[i] = queue<Node>();
-        qArr[i].push(start);
-        distances[i] = 0;
-    }
-
-    bool empty = true;
-    // vector<int> randomNumbers = generateRandomNumbers(0, numberOfDrivers);
-
-    while (empty) {
-        // reverse(randomNumbers.begin(), randomNumbers.end());
-
-        // for (int k = 0; k < randomNumbers.size(); k++) {
-        for (int i = 0; i < numberOfDrivers; i++) {
-            // for (auto &a : order) {
-            //     if (a.size() > largestSize) {
-            //         largestSize = a.size();
-            //     }
-            // }
-
-            // int i = randomNumbers[k];
-
-            if (qArr[i].empty()) {
-                continue;
-            }
-
-            // if (order[i].size() > largestSize) {
-            //     continue;
-            // }
-
-            Node element = qArr[i].front();
-            qArr[i].pop();
-
-            auto it = adjList->find(element);
-
-            if (it == adjList->end()) {
-                continue;
-            }
-
-            for (auto &a : it->second) {
-
-                if ((*visited)[a] != true && pickUp[i]) {
-                    auto itLast = adjList->find(Node(a.destId));
-                    double distDestination = distanceEuclidean(a.x, itLast->first.x, a.y, itLast->first.y);
-                    if ((distances[i] + a.edge + distDestination + itLast->first.edge) < max) {
-                        (*visited)[a] = true;
-                        qArr[i].push(a);
-                        pickUp[i] = false;
-                        distances[i] += a.edge + distDestination;
-                        break;
-                    }
-                }
-
-                if ((*visited)[a] != true && a.destId == element.id && a.destId != 0) {
-                    (*visited)[a] = true;
-                    qArr[i].push(a);
-                    pickUp[i] = true;
-                    order[i].push_back(a.destId);
-                    // if (i == 0) {
-                    //     total += a.edge;
-                    // }   
-                    break;
-                }
-
-            }
-        
-
-        for (auto &a : qArr) {
-          if (a.empty()) {
-            empty = false;
-          }else if (!a.empty()) {
-            empty = true;
-            break;
-          }
-        }
-      }
-    }
  
-    for (auto &a : order) {
-        total += a.size();
-    }
-    // cout << total << endl;
-
-    delete visited;
-
-    return total;
- }
-
  Graph::Graph() {
    adjList = new unordered_map<Node, set<Node, CustomComparator>>();
 }
@@ -386,6 +201,14 @@ void Graph::printAdjList() {
    }
 
 }
+
+// void Graph::updateList() {
+//     for (auto &a : *adjList) {
+//         for (auto it = a.begin(); it != a.end(); ++it) {
+
+//         }
+//     }
+// }
 
 bool Graph::containsNode(Node node1, Node node2) {
    auto iteratorMap = adjList->find(node1);

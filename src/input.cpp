@@ -70,16 +70,17 @@ void makeGraph(string inputFile) {
     //Make min number of edges
     for (int i = 0; i < pX.size(); i++) {
         double d1 = distance(0, pX[i], 0, pY[i]);
-        // double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
+        double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
         double d3 = distance(0, dX[i], 0, dY[i]);
-        Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], 0);
+        Node temp(i+1, d1, true, false, 0, false, pX[i], pY[i], d2);
         graph->makeEdge(start, temp);
-        graph->makeEdge(temp, start);
+        // graph->makeEdge(temp, start);
 
-        temp = Node(i+1.5, d3, false, true, 0, false, dX[i], dY[i], 0);
+        // temp = Node(i+1.5, d3, false, true, 0, false, dX[i], dY[i], 0);
         home[i] = d3;
-        graph->makeEdge(start, temp);
-        graph->makeEdge(temp, start);
+        weights[i] = d2;
+        // graph->makeEdge(start, temp);
+        // graph->makeEdge(temp, start);
     }
 
     //Make graph complete
@@ -91,17 +92,17 @@ void makeGraph(string inputFile) {
             double d2 = distance(pX[j], currentD.x, pY[j], currentD.y);
 
             if (j+1 == currentP.id) {
-                graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], 0));
-                weights[j] = d1;
+                graph->makeEdge(currentP, Node(j+1.5, d1, true, false, j+1, false, pX[j], pY[j], d1 + home[j]));
+                // weights[j] = d1;
             }else{
-                graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], 0));
+                graph->makeEdge(currentD, Node(j+1, d2, true, false, j+1.5, false, dX[j], dY[j], weights[j]));
             }
         }
     }
 
     graph->setDestination(weights);
     graph->setHome(home);
-    graph->printAdjList();
+    // graph->printAdjList();
     graph->findShortestPath(start, pX.size());
 
     delete graph;
