@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <cmath>
 #include <unordered_set>
 
 using namespace std;
@@ -46,7 +47,7 @@ void printOutput(vector<int> &path) {
     }
 
     cout << "[";
-    for (int i = 0; i < path.size(); i++) {
+    for (size_t i = 0; i < path.size(); i++) {
         cout << path[i];
         if (i+1 != path.size()) {
             cout << ",";
@@ -146,7 +147,7 @@ void Graph::makeEdge(Node node1, Node node2) {
     }
 
     //prints out the paths
-    int count = 0;
+    size_t count = 0;
     for (auto &a : order) {
         printOutput(a);
         if (count != 0 || count + 1 != order.size()) {

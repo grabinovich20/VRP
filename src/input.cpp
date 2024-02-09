@@ -40,7 +40,7 @@ void makeGraph(string inputFile) {
     double pickupX, pickupY, dropX, dropY;
     vector<double> pX, pY, dX, dY;
 
-    for (int i = 1; i < input.size(); i++) {
+    for (size_t i = 1; i < input.size(); i++) {
         istringstream stream(input[i]);
 
         // Read the data from the current line
@@ -64,7 +64,7 @@ void makeGraph(string inputFile) {
     graph->makeVertex(start);
 
     //Make min number of edges
-    for (int i = 0; i < pX.size(); i++) {
+    for (size_t i = 0; i < pX.size(); i++) {
         double d1 = distance(0, pX[i], 0, pY[i]);
         double d2 = distance(pX[i], dX[i], pY[i], dY[i]);
         double d3 = distance(0, dX[i], 0, dY[i]);
@@ -76,7 +76,7 @@ void makeGraph(string inputFile) {
     }
 
     //Add edges from all destination nodes to all pick up nodes (besides correlated pick up nodes)
-    for (int i = 0; i < pX.size(); i++) {
+    for (size_t i = 0; i < pX.size(); i++) {
         Node currentP(i+1, 0, true, false, i+1.5, false, pX[i], pY[i], 0);
         Node currentD(i+1.5, 0, false, true, i-0.5, false, dX[i], dY[i], 0);
         for (int j = 0; j < pX.size(); j++) {
